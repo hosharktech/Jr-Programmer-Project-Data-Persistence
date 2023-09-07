@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class MainManager : MonoBehaviour
 {
@@ -18,7 +19,15 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
+    public Text bestScoreText;
+    private string playerName;
+    private int bestScore;
+
+    private void Awake()
+    {
+        LoadPlayerInfo();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -72,5 +81,41 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        if(bestScore < m_Points)
+        {
+            playerName = MenuUIHandler.playerName;
+            bestScore = m_Points;
+            SavePlayerInfo();
+        }
+    }
+
+    [System.Serializable]
+    class SaveData
+    {
+        public string playerName;
+        public int bestScore;
+    }
+
+    public void SavePlayerInfo()
+    {
+        SaveData data = new SaveData();
+        data.playerName = playerName;
+        data.bestScore = bestScore;
+        string json = JsonUtility.ToJson(data);
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+    }
+
+    public void LoadPlayerInfo()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+            playerName = data.playerName;
+            bestScore = data.bestScore;
+            bestScoreText.text = "Best Score: " + playerName + ": " + bestScore;
+        }
     }
 }
