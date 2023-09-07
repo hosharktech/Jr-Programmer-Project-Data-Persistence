@@ -20,11 +20,13 @@ public class MainManager : MonoBehaviour
     private bool m_GameOver = false;
 
     public Text bestScoreText;
-    private string playerName;
-    private int bestScore;
+    public string playerName;
+    public int bestScore;
 
+    public static MainManager Instance;
     private void Awake()
     {
+        Instance = this;
         LoadPlayerInfo();
     }
 
