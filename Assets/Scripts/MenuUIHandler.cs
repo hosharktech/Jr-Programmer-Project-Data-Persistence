@@ -7,18 +7,18 @@ using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using System.IO;
 
 public class MenuUIHandler : MonoBehaviour
 {
-    public TextMeshProUGUI titleText;
+    public TextMeshProUGUI bestScoreText;
     public TMP_InputField inputName;
     public GameObject warningText;
     public static string playerName;
     // Start is called before the first frame update
     void Start()
     {
-        LoadPlayerInfo();
+        PlayerData.Instance.LoadPlayerInfo();
+        bestScoreText.text = "Best Score: " + PlayerData.Instance.playerName + ": " + PlayerData.Instance.bestScore;
     }
 
     // Update is called once per frame
@@ -49,24 +49,5 @@ public class MenuUIHandler : MonoBehaviour
 #else
         Application.Quit();
 #endif
-    }
-
-    [System.Serializable]
-    class SaveData
-    {
-        public string playerName;
-        public int bestScore;
-    }
-    void LoadPlayerInfo()
-    {
-        string path = Application.persistentDataPath + "/savefile.json";
-        if (File.Exists(path))
-        {
-            string json = File.ReadAllText(path);
-            SaveData data = JsonUtility.FromJson<SaveData>(json);
-            string playerName = data.playerName;
-            int bestScore = data.bestScore;
-            titleText.text = "Best Score: " + playerName + ": " + bestScore;
-        }
     }
 }
